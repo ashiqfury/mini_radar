@@ -1,9 +1,8 @@
-package com.example.miniradar
+package com.example.miniradar.viewmodel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import com.example.miniradar.data.repository.PersonRepository
-import com.example.miniradar.viewmodel.AgentsCardViewModel
 
 class ViewModelFactory constructor(private val repository: PersonRepository): ViewModelProvider.Factory {
     override fun <T : ViewModel> create(modelClass: Class<T>): T {

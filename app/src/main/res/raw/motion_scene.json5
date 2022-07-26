@@ -1,0 +1,86 @@
+{
+  ConstraintSets: {
+    start: {
+      title: {
+        start: ['parent', 'start'],
+        end: ['parent', 'end'],
+        top: ['parent', 'top', 64]
+      },
+      header: {
+        start: ['parent', 'start'],
+        bottom: ['parent', 'bottom', 64]
+      },
+      online: {
+        end: ['offline', 'start', -32],
+        bottom: ['parent', 'bottom', 12]
+      },
+      offline: {
+        end: ['parent', 'end', -16],
+        bottom: ['parent', 'bottom', 12]
+      },
+      box: {
+        width: 'spread',
+        start: ['parent', 'start'],
+        end: ['parent', 'end'],
+        top: ['parent', 'top'],
+        bottom: ['parent', 'bottom'],
+      },
+      grid: {
+        width: 'spread',
+        height: 'spread',
+        start: ['parent', 'start'],
+        end: ['parent', 'end'],
+        top: ['box', 'top', 10],
+      }
+    },
+    end: {
+      title: {
+        start: ['parent', 'start'],
+        end: ['parent', 'end'],
+        top: ['parent', 'top', -64]
+      },
+      header: {
+        start: ['parent', 'start'],
+        bottom: ['parent', 'bottom', 12]
+      },
+      online: {
+        end: ['offline', 'start', -164],
+        bottom: ['parent', 'bottom', 12]
+      },
+      offline: {
+        end: ['parent', 'end', -160],
+        bottom: ['parent', 'bottom', 12]
+      },
+      box: {
+        width: 'spread',
+        start: ['parent', 'start'],
+        end: ['parent', 'end'],
+        top: ['parent', 'top'],
+        bottom: ['parent', 'bottom'],
+      },
+      grid: {
+        width: 'spread',
+        height: 'spread',
+        start: ['parent', 'start'],
+        end: ['parent', 'end'],
+        top: ['box', 'top', 10],
+      }
+    }
+  },
+  Transitions: {
+     default: {
+       from: 'start',
+       to: 'end',
+       pathMotionArc: 'startHorizontal',
+       keyFrames: {
+         keyAttributes: [
+           {
+             target: '',
+             frames: [],
+             translationX: []
+           }
+         ]
+       }
+     }
+  }
+}

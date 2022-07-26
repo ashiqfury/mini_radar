@@ -40,7 +40,7 @@ fun AgentsDetailsScreen(navController: NavHostController) {
     HorizontalPager(count = items.size, state = pagerState) { currentPage ->
 
         Card(
-            shape = RoundedCornerShape(20.dp),
+            shape = RoundedCornerShape(10.dp),
             modifier = Modifier
                 .fillMaxSize()
                 .padding(10.dp)
@@ -58,7 +58,7 @@ fun AgentsDetailsScreen(navController: NavHostController) {
                         .height(350.dp),
                 ) {
                     Image(
-                        painter = painterResource(id = R.drawable.image),
+                        painter = painterResource(id = R.drawable.user_avatar),
                         contentDescription = "Profile Picture",
                         modifier = Modifier
                             .fillMaxWidth()
