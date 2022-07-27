@@ -18,15 +18,13 @@ import com.example.miniradar.viewmodel.ViewModelFactory
 class MainActivity : ComponentActivity() {
     private val TAG = "MainActivity"
 
-    @OptIn(ExperimentalAnimationApi::class)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         val remoteHelper = RemotePersonApi(this)
         val repository = PersonRepository(remoteHelper)
         val viewModelFactory = ViewModelFactory(repository)
 
-            //ViewModelProvider( this, viewModelFactory)[AgentsCardViewModel::class.java]
-
+//        ViewModelProvider( this, viewModelFactory)[AgentsCardViewModel::class.java]
 //        viewModel.persons.observeAsState(initial = emptyList())
 
         setContent {
@@ -52,11 +50,6 @@ class MainActivity : ComponentActivity() {
         }
     }
 }
-//
-//fun invokeAgentDetailScreen() {
-//    AgentsDetailsScreen()
-//}
-
 
 @Preview(showBackground = true)
 @Composable
