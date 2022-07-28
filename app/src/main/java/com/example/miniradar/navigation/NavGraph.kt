@@ -42,5 +42,10 @@ fun SetupNavGraph(
         ) {
             AgentsDetailsScreen(navController = navController)
         }
+        composable(
+            route = Screen.Experiment.route,
+        ) {
+            AgentsDetailsScreen(navController = navController)
+        }
     }
 }

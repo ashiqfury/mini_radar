@@ -1,11 +1,9 @@
 package com.example.miniradar.screen
 
+import android.util.Log
 import androidx.compose.animation.animateContentSize
 import androidx.compose.animation.core.animateDpAsState
-import androidx.compose.foundation.ExperimentalFoundationApi
-import androidx.compose.foundation.Image
-import androidx.compose.foundation.background
-import androidx.compose.foundation.border
+import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.*
 import androidx.compose.foundation.shape.CircleShape
@@ -16,7 +14,9 @@ import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
@@ -28,6 +28,7 @@ import androidx.compose.ui.unit.min
 import androidx.compose.ui.zIndex
 import androidx.lifecycle.LiveData
 import androidx.navigation.NavHostController
+import androidx.navigation.compose.rememberNavController
 import com.example.miniradar.R
 import com.example.miniradar.data.model.Person
 import com.example.miniradar.navigation.Screen
@@ -40,6 +41,8 @@ fun AgentsCardScreen(navController: NavHostController, personLiveData: LiveData<
     val personList by personLiveData.observeAsState(initial = emptyList())
 
     val scrollState = rememberLazyListState()
+    val progress = min(100f,1 + (scrollState.firstVisibleItemScrollOffset / 600f + scrollState.firstVisibleItemIndex) * 20)
+
     var switchState by remember { mutableStateOf(true) }
 
     Card(
@@ -59,21 +62,8 @@ fun AgentsCardScreen(navController: NavHostController, personLiveData: LiveData<
                     ScreenHeaderSection(scrollState)
                 }
             },
-            content = {
-//                Card(
-////                    shape = RoundedCornerShape(10.dp),
-//                    modifier = Modifier
-//                        .fillMaxWidth()
-////                        .padding(10.dp)
-//                        .background(Color.LightGray.copy(0.2f)),
-////                    elevation = 4.dp,
-//                ) {
-
-//        Switch(
-//            checked = switchState,
-//            onCheckedChange = {switchState = !switchState },
-//        )
-
+            content = { padding ->
+                Log.d("FURY", "padding -> $padding")
                 Column(
                     modifier = Modifier.fillMaxWidth()
                 ) {
@@ -85,7 +75,6 @@ fun AgentsCardScreen(navController: NavHostController, personLiveData: LiveData<
                         LazyColumnView(navController = navController, scrollState = scrollState)
                     }
                 }
-//            }
             }
         )
     }
@@ -230,14 +219,17 @@ fun CircularStatCard(
 @Composable
 fun LazyGridView(navController: NavHostController, scrollState: LazyListState) {
     val number = (1..50).toList()
+    val columnsCount = 3
     LazyVerticalGrid(
         state = scrollState,
-        cells = GridCells.Fixed(3),
+        cells = GridCells.Fixed(columnsCount),
         modifier = Modifier
             .padding(10.dp)
-            .animateContentSize().fillMaxWidth().fillMaxHeight()
+            .animateContentSize()
+            .fillMaxWidth()
     ) {
         val isProfile = true
+
         items(count = number.size) { index ->
             Card(
                 modifier = Modifier
@@ -359,5 +351,5 @@ fun LazyColumnView(navController: NavHostController, scrollState: LazyListState)
 @Preview
 @Composable
 fun AgentsCardScreenPreview() {
-//    AgentComposition()
+    ExperimentalScreen(navController = rememberNavController())
 }

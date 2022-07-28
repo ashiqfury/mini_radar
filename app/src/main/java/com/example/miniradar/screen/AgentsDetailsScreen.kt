@@ -11,9 +11,11 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.drawWithContent
+import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.BlendMode
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
@@ -26,6 +28,7 @@ import com.google.accompanist.pager.ExperimentalPagerApi
 import com.google.accompanist.pager.HorizontalPager
 import com.google.accompanist.pager.rememberPagerState
 import com.example.miniradar.R
+import com.example.miniradar.utils.*
 
 @OptIn(ExperimentalPagerApi::class)
 @Composable
@@ -58,7 +61,7 @@ fun AgentsDetailsScreen(navController: NavHostController) {
                 }
             )
         },
-        content = {
+        content = { padding ->
             HorizontalPager(count = items.size, state = pagerState) { currentPage ->
 
                 Card(
@@ -80,7 +83,7 @@ fun AgentsDetailsScreen(navController: NavHostController) {
                                 .height(350.dp),
                         ) {
                             Image(
-                                painter = painterResource(id = R.drawable.image),
+                                painter = painterResource(id = R.drawable.user_avatar),
                                 contentDescription = "Profile Picture",
                                 modifier = Modifier
                                     .fillMaxWidth()
@@ -117,6 +120,26 @@ fun AgentsDetailsScreen(navController: NavHostController) {
                                     .padding(bottom = 20.dp),
                                 textAlign = TextAlign.Center
                             )
+                        }
+
+                        Column(modifier = Modifier.fillMaxWidth()) {
+                            Row(
+                                modifier = Modifier.fillMaxWidth(),
+                                verticalAlignment = Alignment.CenterVertically,
+                                horizontalArrangement = Arrangement.Center
+                            ) {
+                                CanvasSubCircle(count = 0, text = "Overdue", countColor = Color.Red, canvasSize = 100.dp)
+                                CanvasMainCircle(canvasSize = 150.dp)
+                                CanvasSubCircle(count = 0, text = "Open", countColor = Color.Blue, canvasSize = 100.dp)
+                            }
+                            Row(
+                                modifier = Modifier.fillMaxWidth(),
+                                verticalAlignment = Alignment.CenterVertically,
+                                horizontalArrangement = Arrangement.Center
+                            ) {
+                                CanvasSubCircle(count = 0, text = "Due 1 hr", countColor = Color.Red, canvasSize = 100.dp)
+                                CanvasSubCircle(count = 0, text = "On Hold", countColor = Color.Red, canvasSize = 100.dp)
+                            }
                         }
 
                         Column {
@@ -159,7 +182,8 @@ fun AgentsDetailsScreen(navController: NavHostController) {
                                         text = "Outgoing",
                                         counterColor = MaterialTheme.colors.primary
                                     )
-                                )
+                                ),
+                                canvasType = CanvasLayoutType.DOUBLE
                             )
                             Box(
                                 modifier = Modifier
@@ -187,7 +211,8 @@ fun AgentsDetailsScreen(navController: NavHostController) {
                                         text = "Resolution",
                                         counterColor = Color.Blue
                                     ),
-                                )
+                                ),
+                                canvasType = CanvasLayoutType.TRIPLE
                             )
                             CounterSections(
                                 title = "First Contact Resolution",
@@ -202,7 +227,8 @@ fun AgentsDetailsScreen(navController: NavHostController) {
                                         text = "FCR Closed Tickets",
                                         counterColor = Color.Blue
                                     ),
-                                )
+                                ),
+                                canvasType = CanvasLayoutType.SINGLE
                             )
 
                         }
@@ -227,8 +253,6 @@ fun AgentsDetailsScreen(navController: NavHostController) {
             }
         }
     )
-
-
 }
 
 @Composable
@@ -240,7 +264,7 @@ fun IconSections(
         Text(
             text = title,
             fontWeight = FontWeight.Bold,
-            fontSize = MaterialTheme.typography.body1.fontSize,
+            fontSize = MaterialTheme.typography.body2.fontSize,
             modifier = Modifier.padding(vertical = 10.dp)
         )
         items.forEach { item ->
@@ -266,23 +290,43 @@ fun IconSections(
 }
 
 @Composable
-fun CounterSections(title: String, items: List<CounterItems>) {
-    Column(modifier = Modifier.padding(horizontal = 30.dp)) {
-        Text(
-            text = title,
-            fontWeight = FontWeight.Bold,
-            fontSize = MaterialTheme.typography.body1.fontSize,
-            modifier = Modifier.padding(vertical = 10.dp)
-        )
-        items.forEach { item ->
-            Column(
-                modifier = Modifier.padding(vertical = 10.dp),
-                horizontalAlignment = Alignment.Start
-            ) {
-                Text(text = item.counter, color = item.counterColor)
-                Spacer(modifier = Modifier.padding(bottom = 10.dp))
-                Text(text = item.text)
+fun CounterSections(
+    title: String,
+    items: List<CounterItems>,
+    canvasType: CanvasLayoutType = CanvasLayoutType.SINGLE
+) {
+
+    Row(
+        modifier = Modifier.fillMaxWidth(),
+        horizontalArrangement = Arrangement.SpaceBetween,
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        Column(
+            modifier = Modifier
+                .padding(horizontal = 30.dp)
+                .weight(1.3f)
+        ) {
+            Text(
+                text = title,
+                fontWeight = FontWeight.Bold,
+                fontSize = MaterialTheme.typography.body2.fontSize,
+                modifier = Modifier.padding(vertical = 10.dp)
+            )
+            items.forEach { item ->
+                Column(
+                    modifier = Modifier.padding(vertical = 10.dp),
+                    horizontalAlignment = Alignment.Start
+                ) {
+                    Text(text = item.counter, color = item.counterColor)
+                    Spacer(modifier = Modifier.padding(bottom = 10.dp))
+                    Text(text = item.text)
+                }
             }
+        }
+        when (canvasType) {
+            CanvasLayoutType.SINGLE -> CanvasSingleCircle()
+            CanvasLayoutType.DOUBLE -> CanvasDoubleCircle()
+            CanvasLayoutType.TRIPLE -> CanvasTripleCircle()
         }
     }
     Divider(
@@ -417,9 +461,12 @@ data class IconItems(
     val icon: ImageVector,
     val text: String,
 )
-
 data class CounterItems(
     val counter: String,
     val text: String,
     val counterColor: Color
 )
+enum class CanvasLayoutType {
+    SINGLE, DOUBLE, TRIPLE
+}
+

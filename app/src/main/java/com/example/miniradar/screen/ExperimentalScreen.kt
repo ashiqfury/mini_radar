@@ -1,17 +1,17 @@
 package com.example.miniradar.screen
 
-import androidx.compose.foundation.background
+import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.rememberLazyListState
-import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.verticalScroll
-import androidx.compose.material.Card
+import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
-import androidx.compose.runtime.*
+import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.drawscope.DrawStyle
+import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
@@ -20,59 +20,41 @@ import androidx.navigation.compose.rememberNavController
 @Composable
 fun ExperimentalScreen(navController: NavHostController) {
 
-    val scrollState = rememberLazyListState()
-    var switchState by remember { mutableStateOf(true) }
-
-    Card(
-        shape = RoundedCornerShape(10.dp),
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(10.dp)
-            .background(Color.LightGray.copy(0.2f)),
-        elevation = 4.dp,
+    Box(
+        modifier = Modifier.size(200.dp),
+        contentAlignment = Alignment.Center
     ) {
-
-        Column(Modifier.fillMaxSize()) {
-            Column(
-                modifier = Modifier.fillMaxWidth()
-            ) {
-                ScreenTitle(scrollState)
-                ScreenHeaderSection(scrollState)
-            }
-            LazyColumn(Modifier.fillMaxWidth().verticalScroll(rememberScrollState())) {
-                item {
-                    Text(text = "This is the text")
-                }
-            }
-//              LazyGridView(navController = navController, scrollState = scrollState)
+        Canvas(modifier = Modifier.fillMaxSize()) {
+            val canvasWidth = size.width
+            val canvasHeight = size.height
+            drawCircle(
+                color = Color.Cyan.copy(0.05f),
+                center = Offset(x = canvasWidth / 2, y = canvasHeight / 2),
+                radius = size.minDimension / 4,
+                style = Stroke(width = 30f)
+            )
+            drawCircle(
+                color = Color.Cyan.copy(0.05f),
+                center = Offset(x = canvasWidth / 2, y = canvasHeight / 2),
+                radius = size.minDimension / 5,
+                style = Stroke(width = 30f)
+            )
+            drawCircle(
+                color = Color.Green.copy(0.05f),
+                center = Offset(x = canvasWidth / 2, y = canvasHeight / 2),
+                radius = size.minDimension / 7,
+                style = Stroke(width = 30f)
+            )
         }
-
-        /*Scaffold(
-            topBar = {
-                Column(
-                    modifier = Modifier.fillMaxWidth()
-                ) {
-                    ScreenTitle(scrollState)
-                    ScreenHeaderSection(scrollState)
-                }
-            },
-            content = {
-                Column(
-                    modifier = Modifier.fillMaxWidth()
-                ) {
-
-                    // lazy list
-                    if (switchState) {
-                        LazyGridView(navController = navController, scrollState = scrollState)
-                    } else {
-                        LazyColumnView(navController = navController, scrollState = scrollState)
-                    }
-                }
-//            }
-            }
-        )*/
+        Text(
+            text = "Hrs",
+            fontSize = MaterialTheme.typography.h6.fontSize,
+            color = Color.DarkGray
+        )
     }
+
 }
+
 
 @Preview
 @Composable
