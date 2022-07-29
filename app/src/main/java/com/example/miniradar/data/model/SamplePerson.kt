@@ -8,5 +8,6 @@ data class SamplePerson(
     val number: String,
     val language: String,
     val location: String,
-    val isOnline: Boolean
+    val isOnline: Boolean,
+    var profilePic: String,
 )

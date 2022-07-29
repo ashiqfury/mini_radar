@@ -1,6 +1,5 @@
 package com.example.miniradar.screen
 
-import android.util.Log
 import androidx.compose.animation.animateContentSize
 import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.foundation.ExperimentalFoundationApi
@@ -18,7 +17,9 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
@@ -27,9 +28,12 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.max
 import androidx.compose.ui.unit.min
 import androidx.compose.ui.zIndex
+import androidx.coordinatorlayout.widget.CoordinatorLayout
 import androidx.lifecycle.LiveData
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
+import coil.compose.AsyncImage
+import coil.request.ImageRequest
 import com.example.miniradar.R
 import com.example.miniradar.data.model.SamplePerson
 import com.example.miniradar.navigation.Screen
@@ -103,6 +107,7 @@ fun ScreenHeaderSection(scrollState: LazyListState) {
 
     val decreaseScrollOffset = min(1f, 1 - (scrollState.firstVisibleItemScrollOffset / 600f + scrollState.firstVisibleItemIndex))
     val rowHeight by animateDpAsState(targetValue = min(100.dp, 100.dp + (decreaseScrollOffset.dp * 4.5f)))
+    
     Row(
         Modifier
             .fillMaxWidth()
@@ -236,9 +241,10 @@ fun LazyGridView(navController: NavHostController, scrollState: LazyListState, p
                     .height(160.dp)
                     .padding(2.dp),
                 shape = RoundedCornerShape(10.dp),
+                elevation = 0.dp,
                 onClick = {
                     navController.navigate(Screen.Detail.withArgs(index))
-                }
+                },
             ) {
                 Column(
                     modifier = Modifier
@@ -249,14 +255,25 @@ fun LazyGridView(navController: NavHostController, scrollState: LazyListState, p
                     verticalArrangement = Arrangement.SpaceEvenly
                 ) {
                     if (isProfile) {
-                        Image(
+                        AsyncImage(
+                            model = ImageRequest.Builder(LocalContext.current)
+                                .data(personList[index].profilePic)
+                                .crossfade(true)
+                                .build(),
+                            contentDescription = "Profile Image",
+                            contentScale = ContentScale.FillBounds,
+                            modifier = Modifier
+                                .size(80.dp)
+                                .clip(CircleShape)
+                        )
+                        /*Image(
                             modifier = Modifier
                                 .size(80.dp)
                                 .clip(CircleShape),
                             painter = painterResource(R.drawable.user_avatar),
                             contentDescription = "Image",
                             contentScale = ContentScale.FillBounds,
-                        )
+                        )*/
                     } else {
                         Box(
                             modifier = Modifier

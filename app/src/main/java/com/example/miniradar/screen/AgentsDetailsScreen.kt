@@ -1,9 +1,11 @@
 package com.example.miniradar.screen
 
-import android.util.Log
-import androidx.compose.foundation.*
+import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.*
@@ -13,30 +15,29 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.drawWithContent
-import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.BlendMode
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.LiveData
 import androidx.navigation.NavHostController
-import com.google.accompanist.pager.ExperimentalPagerApi
-import com.google.accompanist.pager.HorizontalPager
-import com.google.accompanist.pager.rememberPagerState
-import com.example.miniradar.R
+import coil.compose.AsyncImage
+import coil.request.ImageRequest
 import com.example.miniradar.data.model.SamplePerson
 import com.example.miniradar.ui.theme.BlueCustom
 import com.example.miniradar.ui.theme.DarkRedCustom
 import com.example.miniradar.ui.theme.LightGreenCustom
 import com.example.miniradar.ui.theme.OrangeCustom
 import com.example.miniradar.utils.*
+import com.google.accompanist.pager.ExperimentalPagerApi
+import com.google.accompanist.pager.HorizontalPager
+import com.google.accompanist.pager.rememberPagerState
 import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalPagerApi::class)
@@ -104,7 +105,29 @@ fun AgentsDetailsScreen(
                                 .fillMaxWidth()
                                 .height(350.dp),
                         ) {
-                            Image(
+                            AsyncImage(
+                                model = ImageRequest.Builder(LocalContext.current)
+                                    .data(personList[index].profilePic)
+                                    .crossfade(true)
+                                    .build(),
+                                contentDescription = "Profile Image",
+                                contentScale = ContentScale.Fit,
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .height(300.dp)
+                                    .graphicsLayer { alpha = 0.99f }
+                                    .drawWithContent {
+                                        val colors =
+                                            listOf(Color.Black, Color.Black, Color.Transparent)
+                                        drawContent()
+                                        drawRect(
+                                            brush = Brush.verticalGradient(colors),
+                                            blendMode = BlendMode.DstIn
+                                        )
+                                    }
+
+                            )
+                            /*Image(
                                 painter = painterResource(id = R.drawable.user_avatar),
                                 contentDescription = "Profile Picture",
                                 modifier = Modifier
@@ -121,7 +144,7 @@ fun AgentsDetailsScreen(
                                         )
                                     },
                                 contentScale = ContentScale.Fit
-                            )
+                            )*/
 
                             Text(
                                 text = personList[index].name,

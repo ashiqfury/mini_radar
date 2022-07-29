@@ -14,6 +14,12 @@ class RemotePersonApi(private val context: Context) {
         val personType = object : TypeToken<List<SamplePerson>>() {}.type
         val personString = context.assets.open("personsMiniData.json").bufferedReader().use { it.readText() }
 
-        return gson.fromJson(personString, personType)
+        val data =  gson.fromJson(personString, personType) as List<SamplePerson>
+
+        for (index in data.indices) {
+            data[index].profilePic = "https://picsum.photos/${index + 200}"
+        }
+
+        return data
     }
 }
