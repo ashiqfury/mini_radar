@@ -1,5 +1,6 @@
 package com.example.miniradar.screen
 
+import android.util.Log
 import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -7,6 +8,7 @@ import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.*
 import androidx.compose.runtime.*
+import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -23,18 +25,38 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.LiveData
 import androidx.navigation.NavHostController
 import com.google.accompanist.pager.ExperimentalPagerApi
 import com.google.accompanist.pager.HorizontalPager
 import com.google.accompanist.pager.rememberPagerState
 import com.example.miniradar.R
+import com.example.miniradar.data.model.SamplePerson
+import com.example.miniradar.ui.theme.BlueCustom
+import com.example.miniradar.ui.theme.DarkRedCustom
+import com.example.miniradar.ui.theme.LightGreenCustom
+import com.example.miniradar.ui.theme.OrangeCustom
 import com.example.miniradar.utils.*
+import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalPagerApi::class)
 @Composable
-fun AgentsDetailsScreen(navController: NavHostController) {
+fun AgentsDetailsScreen(
+    navController: NavHostController,
+    personLiveData: LiveData<List<SamplePerson>>,
+    personId: Int
+) {
+
+    val personList by personLiveData.observeAsState(initial = emptyList())
+
     val pagerState = rememberPagerState()
-    val items = (0..10).toList()
+
+    val coroutineScope = rememberCoroutineScope()
+    LaunchedEffect(key1 = personId) {
+        coroutineScope.launch {
+            pagerState.animateScrollToPage(page = personId)
+        }
+    }
 
     Scaffold(
         modifier = Modifier.fillMaxSize(),
@@ -62,7 +84,7 @@ fun AgentsDetailsScreen(navController: NavHostController) {
             )
         },
         content = { padding ->
-            HorizontalPager(count = items.size, state = pagerState) { currentPage ->
+            HorizontalPager(count = personList.size, state = pagerState) { index ->
 
                 Card(
                     shape = RoundedCornerShape(10.dp),
@@ -102,7 +124,7 @@ fun AgentsDetailsScreen(navController: NavHostController) {
                             )
 
                             Text(
-                                text = "Ashiq",
+                                text = personList[index].name,
                                 modifier = Modifier
                                     .fillMaxWidth()
                                     .align(Alignment.BottomCenter)
@@ -113,7 +135,7 @@ fun AgentsDetailsScreen(navController: NavHostController) {
                             )
 
                             Text(
-                                text = "CEO - Software Developer",
+                                text = personList[index].role,
                                 modifier = Modifier
                                     .fillMaxWidth()
                                     .align(Alignment.BottomCenter)
@@ -125,20 +147,24 @@ fun AgentsDetailsScreen(navController: NavHostController) {
                         Column(modifier = Modifier.fillMaxWidth()) {
                             Row(
                                 modifier = Modifier.fillMaxWidth(),
-                                verticalAlignment = Alignment.CenterVertically,
+                                verticalAlignment = Alignment.Bottom,
                                 horizontalArrangement = Arrangement.Center
                             ) {
-                                CanvasSubCircle(count = 0, text = "Overdue", countColor = Color.Red, canvasSize = 100.dp)
-                                CanvasMainCircle(canvasSize = 150.dp)
-                                CanvasSubCircle(count = 0, text = "Open", countColor = Color.Blue, canvasSize = 100.dp)
+                                CanvasSubCircle(count = 0, text = "Overdue", countColor = DarkRedCustom, canvasSize = 90.dp, offset = 10.dp)
+                                Spacer(modifier = Modifier.width(10.dp))
+                                CanvasMainCircle(canvasSize = 120.dp)
+                                Spacer(modifier = Modifier.width(10.dp))
+                                CanvasSubCircle(count = 0, text = "Open", countColor = BlueCustom, canvasSize = 90.dp, offset = 10.dp)
                             }
+                            Spacer(modifier = Modifier.height(5.dp))
                             Row(
                                 modifier = Modifier.fillMaxWidth(),
                                 verticalAlignment = Alignment.CenterVertically,
                                 horizontalArrangement = Arrangement.Center
                             ) {
-                                CanvasSubCircle(count = 0, text = "Due 1 hr", countColor = Color.Red, canvasSize = 100.dp)
-                                CanvasSubCircle(count = 0, text = "On Hold", countColor = Color.Red, canvasSize = 100.dp)
+                                CanvasSubCircle(count = 0, text = "Due 1 hr", countColor = DarkRedCustom, canvasSize = 80.dp)
+                                Spacer(modifier = Modifier.width(20.dp))
+                                CanvasSubCircle(count = 0, text = "On Hold", countColor = OrangeCustom, canvasSize = 80.dp)
                             }
                         }
 
@@ -146,15 +172,15 @@ fun AgentsDetailsScreen(navController: NavHostController) {
                             IconSections(
                                 title = "Contact",
                                 items = listOf(
-                                    IconItems(Icons.Default.MailOutline, "ashiqasraf07@gmail.com"),
-                                    IconItems(Icons.Default.Phone, "55552"),
+                                    IconItems(Icons.Default.MailOutline, personList[index].email),
+                                    IconItems(Icons.Default.Phone, personList[index].number.repeat(2)),
                                 )
                             )
                             IconSections(
                                 title = "Location",
                                 items = listOf(
-                                    IconItems(Icons.Default.LocationOn, "India"),
-                                    IconItems(Icons.Default.Place, "English"),
+                                    IconItems(Icons.Default.LocationOn, personList[index].location),
+                                    IconItems(Icons.Default.Place, personList[index].language),
                                 )
                             )
 
@@ -180,7 +206,7 @@ fun AgentsDetailsScreen(navController: NavHostController) {
                                     CounterItems(
                                         counter = "0",
                                         text = "Outgoing",
-                                        counterColor = MaterialTheme.colors.primary
+                                        counterColor = BlueCustom
                                     )
                                 ),
                                 canvasType = CanvasLayoutType.DOUBLE
@@ -199,7 +225,7 @@ fun AgentsDetailsScreen(navController: NavHostController) {
                                     CounterItems(
                                         counter = "00:00",
                                         text = "First response",
-                                        counterColor = Color.Cyan
+                                        counterColor = LightGreenCustom
                                     ),
                                     CounterItems(
                                         counter = "00:00",
@@ -209,7 +235,7 @@ fun AgentsDetailsScreen(navController: NavHostController) {
                                     CounterItems(
                                         counter = "00:00",
                                         text = "Resolution",
-                                        counterColor = Color.Blue
+                                        counterColor = BlueCustom
                                     ),
                                 ),
                                 canvasType = CanvasLayoutType.TRIPLE
@@ -225,7 +251,7 @@ fun AgentsDetailsScreen(navController: NavHostController) {
                                     CounterItems(
                                         counter = "0",
                                         text = "FCR Closed Tickets",
-                                        counterColor = Color.Blue
+                                        counterColor = BlueCustom
                                     ),
                                 ),
                                 canvasType = CanvasLayoutType.SINGLE

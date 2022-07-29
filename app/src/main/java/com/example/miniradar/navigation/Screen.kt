@@ -4,5 +4,12 @@ sealed class Screen(val route: String) {
     object Home: Screen(route = "home_screen")
     object Detail: Screen(route = "detail_screen")
 
-    object Experiment: Screen(route = "experimental_screen")
+    fun withArgs(vararg args: Int): String {
+        return buildString {
+            append(route)
+            args.forEach { arg ->
+                append("/$arg")
+            }
+        }
+    }
 }

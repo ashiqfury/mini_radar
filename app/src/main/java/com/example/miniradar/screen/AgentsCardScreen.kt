@@ -3,7 +3,10 @@ package com.example.miniradar.screen
 import android.util.Log
 import androidx.compose.animation.animateContentSize
 import androidx.compose.animation.core.animateDpAsState
-import androidx.compose.foundation.*
+import androidx.compose.foundation.ExperimentalFoundationApi
+import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.*
 import androidx.compose.foundation.shape.CircleShape
@@ -14,9 +17,7 @@ import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
@@ -30,20 +31,18 @@ import androidx.lifecycle.LiveData
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import com.example.miniradar.R
-import com.example.miniradar.data.model.Person
+import com.example.miniradar.data.model.SamplePerson
 import com.example.miniradar.navigation.Screen
 import java.lang.Float.min
 import kotlin.math.max
 
 @Composable
-fun AgentsCardScreen(navController: NavHostController, personLiveData: LiveData<List<Person>>) {
+fun AgentsCardScreen(navController: NavHostController, personLiveData: LiveData<List<SamplePerson>>) {
 
     val personList by personLiveData.observeAsState(initial = emptyList())
 
     val scrollState = rememberLazyListState()
     val progress = min(100f,1 + (scrollState.firstVisibleItemScrollOffset / 600f + scrollState.firstVisibleItemIndex) * 20)
-
-    var switchState by remember { mutableStateOf(true) }
 
     Card(
         shape = RoundedCornerShape(10.dp),
@@ -63,16 +62,16 @@ fun AgentsCardScreen(navController: NavHostController, personLiveData: LiveData<
                 }
             },
             content = { padding ->
-                Log.d("FURY", "padding -> $padding")
                 Column(
                     modifier = Modifier.fillMaxWidth()
                 ) {
 
                     // lazy list
+                    val switchState by remember { mutableStateOf(true) }
                     if (switchState) {
-                        LazyGridView(navController = navController, scrollState = scrollState)
+                        LazyGridView(navController = navController, scrollState = scrollState, personList = personList)
                     } else {
-                        LazyColumnView(navController = navController, scrollState = scrollState)
+                        LazyColumnView(navController = navController, scrollState = scrollState, personList = personList)
                     }
                 }
             }
@@ -217,8 +216,8 @@ fun CircularStatCard(
 
 @OptIn(ExperimentalFoundationApi::class, ExperimentalMaterialApi::class)
 @Composable
-fun LazyGridView(navController: NavHostController, scrollState: LazyListState) {
-    val number = (1..50).toList()
+fun LazyGridView(navController: NavHostController, scrollState: LazyListState, personList: List<SamplePerson>) {
+
     val columnsCount = 3
     LazyVerticalGrid(
         state = scrollState,
@@ -230,14 +229,15 @@ fun LazyGridView(navController: NavHostController, scrollState: LazyListState) {
     ) {
         val isProfile = true
 
-        items(count = number.size) { index ->
+        items(count = personList.size) { index ->
             Card(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(3.dp),
+                    .height(160.dp)
+                    .padding(2.dp),
                 shape = RoundedCornerShape(10.dp),
                 onClick = {
-                    navController.navigate(Screen.Detail.route)
+                    navController.navigate(Screen.Detail.withArgs(index))
                 }
             ) {
                 Column(
@@ -269,7 +269,7 @@ fun LazyGridView(navController: NavHostController, scrollState: LazyListState) {
                     }
 
                     Text(
-                        text = "Ashiq",
+                        text = personList[index].name,
 //                                text = personList[index].name.capitalize(LocaleList()),
                         modifier = Modifier
                             .fillParentMaxWidth()
@@ -285,8 +285,7 @@ fun LazyGridView(navController: NavHostController, scrollState: LazyListState) {
 
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
-fun LazyColumnView(navController: NavHostController, scrollState: LazyListState) {
-    val number = (1..50).toList()
+fun LazyColumnView(navController: NavHostController, scrollState: LazyListState, personList: List<SamplePerson>) {
     LazyColumn(
         state = scrollState,
         modifier = Modifier
@@ -294,14 +293,14 @@ fun LazyColumnView(navController: NavHostController, scrollState: LazyListState)
             .animateContentSize()
     ) {
         val isProfile = true
-        items(number.size) { index ->
+        items(personList.size) { index ->
             Card(
                 modifier = Modifier
                     .fillMaxSize()
                     .padding(3.dp),
                 shape = RoundedCornerShape(10.dp),
                 onClick = {
-                    navController.navigate(Screen.Detail.route)
+                    navController.navigate(Screen.Detail.withArgs(index))
                 }
             ) {
                 Row(
@@ -333,7 +332,7 @@ fun LazyColumnView(navController: NavHostController, scrollState: LazyListState)
                     }
 
                     Text(
-                        text = "Ashiq",
+                        text = personList[index].name,
 //                                text = personList[index].name.capitalize(LocaleList()),
                         modifier = Modifier
                             .fillParentMaxWidth()

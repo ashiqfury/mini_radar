@@ -10,6 +10,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.drawscope.Stroke
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
@@ -132,13 +133,13 @@ fun RowScope.CanvasMainCircle(canvasSize: Dp = 150.dp) {
             drawCircle(
                 color = Color.LightGray.copy(0.1f),
                 center = Offset(x = canvasWidth / 2, y = canvasHeight / 2),
-                radius = size.minDimension / 3,
+                radius = size.minDimension / 2,
                 style = Stroke(width = 7f)
             )
             drawCircle(
                 color = Color.LightGray.copy(0.25f),
                 center = Offset(x = canvasWidth / 2, y = canvasHeight / 2),
-                radius = size.minDimension / 4,
+                radius = size.minDimension / 2.5f,
                 style = Stroke(width = 10f)
             )
         }
@@ -147,7 +148,8 @@ fun RowScope.CanvasMainCircle(canvasSize: Dp = 150.dp) {
                 text = "0%",
                 fontSize = MaterialTheme.typography.body2.fontSize,
                 color = Color.DarkGray.copy(0.8f),
-                textAlign = TextAlign.Center
+                textAlign = TextAlign.Center,
+                fontWeight = FontWeight.Bold
             )
             Text(
                 text = "Happiness \n rating",
@@ -160,9 +162,16 @@ fun RowScope.CanvasMainCircle(canvasSize: Dp = 150.dp) {
 }
 
 @Composable
-fun RowScope.CanvasSubCircle(canvasSize: Dp = 150.dp, count: Int, text: String, countColor: Color) {
+fun RowScope.CanvasSubCircle(
+    canvasSize: Dp = 150.dp,
+    count: Int,
+    text: String,
+    countColor: Color,
+    offset: Dp = 0.dp
+) {
     Box(
         modifier = Modifier
+            .offset(y = offset)
             .size(canvasSize),
         contentAlignment = Alignment.Center
     ) {
@@ -173,7 +182,7 @@ fun RowScope.CanvasSubCircle(canvasSize: Dp = 150.dp, count: Int, text: String, 
             drawCircle(
                 color = Color.LightGray.copy(0.1f),
                 center = Offset(x = canvasWidth / 2, y = canvasHeight / 2),
-                radius = size.minDimension / 3,
+                radius = size.minDimension / 2,
                 style = Stroke(width = 7f)
             )
 
@@ -183,7 +192,8 @@ fun RowScope.CanvasSubCircle(canvasSize: Dp = 150.dp, count: Int, text: String, 
                 text = "$count",
                 fontSize = MaterialTheme.typography.body2.fontSize,
                 color = countColor.copy(0.8f),
-                textAlign = TextAlign.Center
+                textAlign = TextAlign.Center,
+                fontWeight = FontWeight.Bold
             )
             Spacer(modifier = Modifier.height(8.dp))
             Text(
@@ -191,6 +201,7 @@ fun RowScope.CanvasSubCircle(canvasSize: Dp = 150.dp, count: Int, text: String, 
                 fontSize = MaterialTheme.typography.caption.fontSize,
                 color = Color.DarkGray.copy(0.5f),
                 textAlign = TextAlign.Center,
+
             )
         }
     }
