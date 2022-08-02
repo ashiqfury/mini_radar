@@ -2,6 +2,8 @@ package com.example.miniradar.screen
 
 import androidx.compose.animation.animateContentSize
 import androidx.compose.animation.core.animateDpAsState
+import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -17,7 +19,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
@@ -25,10 +26,8 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.max
 import androidx.compose.ui.unit.min
 import androidx.compose.ui.zIndex
-import androidx.coordinatorlayout.widget.CoordinatorLayout
 import androidx.lifecycle.LiveData
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
@@ -41,12 +40,20 @@ import java.lang.Float.min
 import kotlin.math.max
 
 @Composable
-fun AgentsCardScreen(navController: NavHostController, personLiveData: LiveData<List<SamplePerson>>) {
+fun AgentsCardScreen(
+    navController: NavHostController,
+    personLiveData: LiveData<List<SamplePerson>>
+) {
 
     val personList by personLiveData.observeAsState(initial = emptyList())
 
     val scrollState = rememberLazyListState()
-    val progress = min(100f,1 + (scrollState.firstVisibleItemScrollOffset / 600f + scrollState.firstVisibleItemIndex) * 20)
+//    val progress = getProgress(scrollState = scrollState)
+//    Log.d("FURY", "AgentsCardScreen: progress: $progress fstVIOffset: ${scrollState.firstVisibleItemScrollOffset} index: ${scrollState.firstVisibleItemIndex}")
+//    val decreaseScrollOffset = getDecreasedScrollOffset(scrollState = scrollState)
+//    val titleHeight by animateDpAsState(targetValue = min(200.dp, 200.dp + decreaseScrollOffset.dp))
+
+//    Log.d("FURY", "lololaaiii -> ")
 
     Card(
         shape = RoundedCornerShape(10.dp),
@@ -54,7 +61,7 @@ fun AgentsCardScreen(navController: NavHostController, personLiveData: LiveData<
             .fillMaxSize()
             .padding(10.dp)
             .background(Color.LightGray.copy(0.2f)),
-        elevation = 4.dp,
+        elevation = 2.dp,
     ) {
         Scaffold(
             topBar = {
@@ -73,9 +80,17 @@ fun AgentsCardScreen(navController: NavHostController, personLiveData: LiveData<
                     // lazy list
                     val switchState by remember { mutableStateOf(true) }
                     if (switchState) {
-                        LazyGridView(navController = navController, scrollState = scrollState, personList = personList)
+                        LazyGridView(
+                            navController = navController,
+                            scrollState = scrollState,
+                            personList = personList
+                        )
                     } else {
-                        LazyColumnView(navController = navController, scrollState = scrollState, personList = personList)
+                        LazyColumnView(
+                            navController = navController,
+                            scrollState = scrollState,
+                            personList = personList
+                        )
                     }
                 }
             }
@@ -86,30 +101,81 @@ fun AgentsCardScreen(navController: NavHostController, personLiveData: LiveData<
 
 @Composable
 fun ScreenTitle(scrollState: LazyListState) {
-    val decreaseScrollOffset = min(1f,1 - (scrollState.firstVisibleItemScrollOffset / 600f + scrollState.firstVisibleItemIndex))
-    val titlePadding by animateDpAsState(targetValue = max(0.dp, 40.dp * decreaseScrollOffset))
-    val titleOffset by animateDpAsState(targetValue = min(40.dp, 10.dp * 1.5f * decreaseScrollOffset))
-    Text(
+    val decreaseScrollOffset = getDecreasedScrollOffset(scrollState = scrollState)
+//    val titlePadding by animateDpAsState(targetValue = max(0.dp, 40.dp * decreaseScrollOffset))
+    val titleOffset by animateDpAsState(
+        targetValue = min(
+            40.dp,
+            10.dp * 1.5f * decreaseScrollOffset
+        )
+    )
+
+//    val titleHeight by animateDpAsState(targetValue = min(0.dp, 40.dp * decreaseScrollOffset))
+    val titleHeight by animateDpAsState(targetValue = 40.dp * decreaseScrollOffset)
+
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .height(min(115.dp, titleHeight + 55.dp))
+            .offset(y = titleOffset),
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.Center
+    ) {
+        Text(
+            text = "Agents",
+            modifier = Modifier
+                .fillMaxWidth(),
+//                .height(min(115.dp, titleHeight + 115.dp))
+//                .padding(vertical = titlePadding)
+//                .offset(y = titleOffset),
+
+            color = MaterialTheme.colors.primary,
+            fontSize = MaterialTheme.typography.h5.fontSize,
+            textAlign = TextAlign.Center,
+        )
+    }
+
+    /*Text(
         text = "Agents",
         modifier = Modifier
             .fillMaxWidth()
-            .height(min(110.dp, titleOffset + 110.dp))
+            .height(min(115.dp, titleHeight + 115.dp))
             .padding(vertical = titlePadding)
             .offset(y = titleOffset),
         color = MaterialTheme.colors.primary,
         fontSize = MaterialTheme.typography.h5.fontSize,
         textAlign = TextAlign.Center,
-    )
+    )*/
 }
 
 @Composable
 fun ScreenHeaderSection(scrollState: LazyListState) {
 
-    val decreaseScrollOffset = min(1f, 1 - (scrollState.firstVisibleItemScrollOffset / 600f + scrollState.firstVisibleItemIndex))
-    val rowHeight by animateDpAsState(targetValue = min(100.dp, 100.dp + (decreaseScrollOffset.dp * 4.5f)))
-    
+    val decreaseScrollOffset = getDecreasedScrollOffset(scrollState = scrollState)
+//    val increasedScrollOffset = getIncreasedScrollOffset(scrollState = scrollState)
+//    Log.d("FURY", "ScreenHeaderSection: $decreaseScrollOffset $increasedScrollOffset")
+
+    val rowHeight by animateDpAsState(
+        targetValue = min(
+            110.dp,
+            100.dp + (decreaseScrollOffset.dp * 4.5f)
+        )
+    )
+
+    val alpha: Float by animateFloatAsState(
+        targetValue = if (rowHeight < 95.dp) 0f else 0.1f,
+        tween(600)
+    )
+
+    // 4.355
+    // -3.16
+//    val offset: Dp = if (decreaseScrollOffset > -2.66) decreaseScrollOffset.dp * 2f else 0.dp
+//    Log.d("FURY", "ScreenHeaderSection: offset : $offset")
+//    Log.d("FURY", "ScreenHeaderSection: $rowHeight")
+
     Row(
         Modifier
+//            .offset(y = offset)
             .fillMaxWidth()
             .height(rowHeight),
         horizontalArrangement = Arrangement.SpaceBetween
@@ -117,7 +183,7 @@ fun ScreenHeaderSection(scrollState: LazyListState) {
         Box(
             modifier = Modifier
                 .clip(RoundedCornerShape(topEnd = 50.dp, bottomEnd = 50.dp))
-                .background(Color.LightGray.copy(0.1f))
+                .background(color = Color.LightGray.copy(alpha))
                 .padding(15.dp),
         ) {
             Text(text = "All Agents")
@@ -177,10 +243,7 @@ fun CircularStatCard(
     val bgColor = if (isActive) backgroundColor.copy(0.1f) else Color.LightGray.copy(0.1f)
     val zIndex = if (isActive) 2f else 1f
 
-    val increaseScrollOffset = max(
-        1f,
-        1 + (scrollState.firstVisibleItemScrollOffset / 600f + scrollState.firstVisibleItemIndex)
-    )
+    val increaseScrollOffset = getIncreasedScrollOffset(scrollState = scrollState)
     val offset: Dp = if (title == "Online") {
         val onlineOffset by animateDpAsState(targetValue = 40.dp * 1.2f * increaseScrollOffset)
         onlineOffset
@@ -221,20 +284,24 @@ fun CircularStatCard(
 
 @OptIn(ExperimentalFoundationApi::class, ExperimentalMaterialApi::class)
 @Composable
-fun LazyGridView(navController: NavHostController, scrollState: LazyListState, personList: List<SamplePerson>) {
+fun LazyGridView(
+    navController: NavHostController,
+    scrollState: LazyListState,
+    personList: List<SamplePerson>
+) {
 
     val columnsCount = 3
     LazyVerticalGrid(
         state = scrollState,
         cells = GridCells.Fixed(columnsCount),
         modifier = Modifier
-            .padding(10.dp)
+            .padding(start = 10.dp, end = 10.dp, bottom = 10.dp, top = 0.dp)
             .animateContentSize()
             .fillMaxWidth()
     ) {
         val isProfile = true
 
-        items(count = personList.size) { index ->
+        items(count = personList.size - 2) { index ->
             Card(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -302,7 +369,11 @@ fun LazyGridView(navController: NavHostController, scrollState: LazyListState, p
 
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
-fun LazyColumnView(navController: NavHostController, scrollState: LazyListState, personList: List<SamplePerson>) {
+fun LazyColumnView(
+    navController: NavHostController,
+    scrollState: LazyListState,
+    personList: List<SamplePerson>
+) {
     LazyColumn(
         state = scrollState,
         modifier = Modifier
@@ -310,7 +381,7 @@ fun LazyColumnView(navController: NavHostController, scrollState: LazyListState,
             .animateContentSize()
     ) {
         val isProfile = true
-        items(personList.size) { index ->
+        items(personList.size - 2) { index ->
             Card(
                 modifier = Modifier
                     .fillMaxSize()
@@ -363,6 +434,28 @@ fun LazyColumnView(navController: NavHostController, scrollState: LazyListState,
     }
 }
 
+
+const val SCROLL_CONST = 600f
+fun getIncreasedScrollOffset(scrollState: LazyListState): Float {
+    return max(
+        1f,
+        1 + (scrollState.firstVisibleItemScrollOffset / SCROLL_CONST + scrollState.firstVisibleItemIndex)
+    )
+}
+
+fun getDecreasedScrollOffset(scrollState: LazyListState): Float {
+    return min(
+        1f,
+        1 - (scrollState.firstVisibleItemScrollOffset / SCROLL_CONST + scrollState.firstVisibleItemIndex)
+    )
+}
+
+fun getProgress(scrollState: LazyListState): Float {
+    return min(
+        100f,
+        1 + (scrollState.firstVisibleItemScrollOffset / SCROLL_CONST + scrollState.firstVisibleItemIndex) * 20
+    )
+}
 
 @Preview
 @Composable

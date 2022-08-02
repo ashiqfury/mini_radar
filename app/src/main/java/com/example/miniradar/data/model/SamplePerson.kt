@@ -10,4 +10,9 @@ data class SamplePerson(
     val location: String,
     val isOnline: Boolean,
     var profilePic: String,
+    var happinessPercentage: Int,
+    var overdue: Int,
+    var due: Int,
+    var onHold: Int,
+    var open: Int
 )

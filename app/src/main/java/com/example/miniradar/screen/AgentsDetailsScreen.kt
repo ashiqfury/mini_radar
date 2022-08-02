@@ -1,5 +1,6 @@
 package com.example.miniradar.screen
 
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
@@ -38,7 +39,9 @@ import com.example.miniradar.utils.*
 import com.google.accompanist.pager.ExperimentalPagerApi
 import com.google.accompanist.pager.HorizontalPager
 import com.google.accompanist.pager.rememberPagerState
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.yield
 
 @OptIn(ExperimentalPagerApi::class)
 @Composable
@@ -52,12 +55,20 @@ fun AgentsDetailsScreen(
 
     val pagerState = rememberPagerState()
 
-    val coroutineScope = rememberCoroutineScope()
     LaunchedEffect(key1 = personId) {
-        coroutineScope.launch {
-            pagerState.animateScrollToPage(page = personId)
-        }
+        pagerState.scrollToPage(page = personId)
     }
+
+    /*LaunchedEffect(key1 = Unit) {
+        while(true) {
+            yield()
+            delay(5000)
+            pagerState.animateScrollToPage(
+                page = (pagerState.currentPage + 1) % (pagerState.pageCount),
+                animationSpec = tween(600)
+            )
+        }
+    }*/
 
     Scaffold(
         modifier = Modifier.fillMaxSize(),
@@ -85,15 +96,15 @@ fun AgentsDetailsScreen(
             )
         },
         content = { padding ->
-            HorizontalPager(count = personList.size, state = pagerState) { index ->
+            HorizontalPager(count = personList.size - 2, state = pagerState) { index ->
 
                 Card(
                     shape = RoundedCornerShape(10.dp),
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(10.dp)
+                        .padding(top = 10.dp, start = 10.dp, end = 10.dp, bottom = 0.dp)
                         .background(Color.LightGray.copy(0.2f)),
-                    elevation = 4.dp,
+                    elevation = 2.dp,
                 ) {
                     Column(
                         modifier = Modifier
@@ -173,11 +184,23 @@ fun AgentsDetailsScreen(
                                 verticalAlignment = Alignment.Bottom,
                                 horizontalArrangement = Arrangement.Center
                             ) {
-                                CanvasSubCircle(count = 0, text = "Overdue", countColor = DarkRedCustom, canvasSize = 90.dp, offset = 10.dp)
+                                CanvasSubCircle(
+                                    count = personList[index].overdue,
+                                    text = "Overdue",
+                                    countColor = DarkRedCustom,
+                                    canvasSize = 90.dp,
+                                    offset = 10.dp
+                                )
                                 Spacer(modifier = Modifier.width(10.dp))
-                                CanvasMainCircle(canvasSize = 120.dp)
+                                CanvasMainCircle(canvasSize = 120.dp, percentage = personList[index].happinessPercentage)
                                 Spacer(modifier = Modifier.width(10.dp))
-                                CanvasSubCircle(count = 0, text = "Open", countColor = BlueCustom, canvasSize = 90.dp, offset = 10.dp)
+                                CanvasSubCircle(
+                                    count = personList[index].open,
+                                    text = "Open",
+                                    countColor = BlueCustom,
+                                    canvasSize = 90.dp,
+                                    offset = 10.dp
+                                )
                             }
                             Spacer(modifier = Modifier.height(5.dp))
                             Row(
@@ -185,9 +208,19 @@ fun AgentsDetailsScreen(
                                 verticalAlignment = Alignment.CenterVertically,
                                 horizontalArrangement = Arrangement.Center
                             ) {
-                                CanvasSubCircle(count = 0, text = "Due 1 hr", countColor = DarkRedCustom, canvasSize = 80.dp)
+                                CanvasSubCircle(
+                                    count = personList[index].due,
+                                    text = "Due 1 hr",
+                                    countColor = DarkRedCustom,
+                                    canvasSize = 80.dp
+                                )
                                 Spacer(modifier = Modifier.width(20.dp))
-                                CanvasSubCircle(count = 0, text = "On Hold", countColor = OrangeCustom, canvasSize = 80.dp)
+                                CanvasSubCircle(
+                                    count = personList[index].onHold,
+                                    text = "On Hold",
+                                    countColor = OrangeCustom,
+                                    canvasSize = 80.dp
+                                )
                             }
                         }
 
@@ -196,7 +229,10 @@ fun AgentsDetailsScreen(
                                 title = "Contact",
                                 items = listOf(
                                     IconItems(Icons.Default.MailOutline, personList[index].email),
-                                    IconItems(Icons.Default.Phone, personList[index].number.repeat(2)),
+                                    IconItems(
+                                        Icons.Default.Phone,
+                                        personList[index].number.repeat(2)
+                                    ),
                                 )
                             )
                             IconSections(
@@ -216,7 +252,10 @@ fun AgentsDetailsScreen(
                                     .background(Color.LightGray.copy(0.1f))
                                     .padding(15.dp),
                             ) {
-                                Text(text = "Today")
+                                Text(
+                                    text = "Today",
+                                    fontSize = MaterialTheme.typography.body2.fontSize
+                                )
                             }
                             CounterSections(
                                 title = "Hourly responses",
@@ -240,7 +279,10 @@ fun AgentsDetailsScreen(
                                     .background(Color.LightGray.copy(0.1f))
                                     .padding(15.dp),
                             ) {
-                                Text(text = "Last 7 days")
+                                Text(
+                                    text = "Last 7 days",
+                                    fontSize = MaterialTheme.typography.body2.fontSize
+                                )
                             }
                             CounterSections(
                                 title = "Average Handling Time",
@@ -367,8 +409,8 @@ fun CounterSections(
                     horizontalAlignment = Alignment.Start
                 ) {
                     Text(text = item.counter, color = item.counterColor)
-                    Spacer(modifier = Modifier.padding(bottom = 10.dp))
-                    Text(text = item.text)
+                    Spacer(modifier = Modifier.padding(bottom = 8.dp))
+                    Text(text = item.text, fontSize = MaterialTheme.typography.body2.fontSize)
                 }
             }
         }
@@ -510,11 +552,13 @@ data class IconItems(
     val icon: ImageVector,
     val text: String,
 )
+
 data class CounterItems(
     val counter: String,
     val text: String,
     val counterColor: Color
 )
+
 enum class CanvasLayoutType {
     SINGLE, DOUBLE, TRIPLE
 }
