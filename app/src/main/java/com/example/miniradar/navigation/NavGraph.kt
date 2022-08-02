@@ -11,6 +11,7 @@ import com.example.miniradar.data.model.Person
 import com.example.miniradar.data.model.SamplePerson
 import com.example.miniradar.screen.AgentsCardScreen
 import com.example.miniradar.screen.AgentsDetailsScreen
+import com.example.miniradar.screen.AgentsSearchScreen
 
 @Composable
 fun SetupNavGraph(
@@ -30,7 +31,7 @@ fun SetupNavGraph(
                 fadeOut(animationSpec = tween(2000))
             }*/
         ) {
-            AgentsCardScreen(navController = navController, liveDataPersonList)
+            AgentsCardScreen(navController = navController, personLiveData = liveDataPersonList)
         }
         composable(
             route = Screen.Detail.route + "/{personId}",
@@ -49,6 +50,10 @@ fun SetupNavGraph(
                 )
             }
         }
-
+        composable(
+            route = Screen.Search.route,
+        ) {
+            AgentsSearchScreen(navController = navController, personLiveData = liveDataPersonList)
+        }
     }
 }

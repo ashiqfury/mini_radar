@@ -14,5 +14,6 @@ data class SamplePerson(
     var overdue: Int,
     var due: Int,
     var onHold: Int,
-    var open: Int
+    var open: Int,
+    var hasProfilePic: Boolean = true
 )

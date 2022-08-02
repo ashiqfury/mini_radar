@@ -31,6 +31,7 @@ import androidx.navigation.NavHostController
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
 import com.example.miniradar.data.model.SamplePerson
+import com.example.miniradar.navigation.Screen
 import com.example.miniradar.ui.theme.BlueCustom
 import com.example.miniradar.ui.theme.DarkRedCustom
 import com.example.miniradar.ui.theme.LightGreenCustom
@@ -80,42 +81,43 @@ fun AgentsDetailsScreen(
                     IconButton(onClick = { navController.popBackStack() }) {
                         Icon(
                             imageVector = Icons.Filled.ArrowBack,
-                            contentDescription = "Localized description"
+                            contentDescription = null
                         )
                     }
                 },
                 actions = {
-                    IconButton(onClick = { /* doSomething() */ }) {
+                    IconButton(onClick = { navController.navigate(Screen.Search.route) }) {
                         Icon(
                             imageVector = Icons.Filled.Search,
-                            contentDescription = "Localized description",
+                            contentDescription = null,
                             tint = MaterialTheme.colors.primary
                         )
                     }
                 }
             )
-        },
-        content = { padding ->
-            HorizontalPager(count = personList.size - 2, state = pagerState) { index ->
+        }
+    ) { padding ->
+        HorizontalPager(count = personList.size - 2, state = pagerState) { index ->
 
-                Card(
-                    shape = RoundedCornerShape(10.dp),
+            Card(
+                shape = RoundedCornerShape(10.dp),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(top = 10.dp, start = 10.dp, end = 10.dp, bottom = 0.dp)
+                    .background(Color.LightGray.copy(0.2f)),
+                elevation = 2.dp,
+            ) {
+                Column(
                     modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(top = 10.dp, start = 10.dp, end = 10.dp, bottom = 0.dp)
-                        .background(Color.LightGray.copy(0.2f)),
-                    elevation = 2.dp,
+                        .fillMaxSize()
+                        .verticalScroll(rememberScrollState()),
                 ) {
-                    Column(
+                    Box(
                         modifier = Modifier
-                            .fillMaxSize()
-                            .verticalScroll(rememberScrollState()),
+                            .fillMaxWidth()
+                            .height(350.dp),
                     ) {
-                        Box(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .height(350.dp),
-                        ) {
+                        if (personList[index].hasProfilePic) {
                             AsyncImage(
                                 model = ImageRequest.Builder(LocalContext.current)
                                     .data(personList[index].profilePic)
@@ -138,212 +140,209 @@ fun AgentsDetailsScreen(
                                     }
 
                             )
-                            /*Image(
-                                painter = painterResource(id = R.drawable.user_avatar),
-                                contentDescription = "Profile Picture",
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .height(300.dp)
-                                    .graphicsLayer { alpha = 0.99F }
-                                    .drawWithContent {
-                                        val colors =
-                                            listOf(Color.Black, Color.Black, Color.Transparent)
-                                        drawContent()
-                                        drawRect(
-                                            brush = Brush.verticalGradient(colors),
-                                            blendMode = BlendMode.DstIn
-                                        )
-                                    },
-                                contentScale = ContentScale.Fit
-                            )*/
-
-                            Text(
-                                text = personList[index].name,
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .align(Alignment.BottomCenter)
-                                    .padding(bottom = 50.dp),
-                                textAlign = TextAlign.Center,
-                                fontSize = MaterialTheme.typography.h4.fontSize,
-                                fontWeight = FontWeight.Bold,
-                            )
-
-                            Text(
-                                text = personList[index].role,
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .align(Alignment.BottomCenter)
-                                    .padding(bottom = 20.dp),
-                                textAlign = TextAlign.Center
-                            )
-                        }
-
-                        Column(modifier = Modifier.fillMaxWidth()) {
+                        } else {
                             Row(
-                                modifier = Modifier.fillMaxWidth(),
-                                verticalAlignment = Alignment.Bottom,
+                                modifier = Modifier.fillMaxWidth().padding(top = 50.dp),
                                 horizontalArrangement = Arrangement.Center
                             ) {
-                                CanvasSubCircle(
-                                    count = personList[index].overdue,
-                                    text = "Overdue",
-                                    countColor = DarkRedCustom,
-                                    canvasSize = 90.dp,
-                                    offset = 10.dp
-                                )
-                                Spacer(modifier = Modifier.width(10.dp))
-                                CanvasMainCircle(canvasSize = 120.dp, percentage = personList[index].happinessPercentage)
-                                Spacer(modifier = Modifier.width(10.dp))
-                                CanvasSubCircle(
-                                    count = personList[index].open,
-                                    text = "Open",
-                                    countColor = BlueCustom,
-                                    canvasSize = 90.dp,
-                                    offset = 10.dp
-                                )
-                            }
-                            Spacer(modifier = Modifier.height(5.dp))
-                            Row(
-                                modifier = Modifier.fillMaxWidth(),
-                                verticalAlignment = Alignment.CenterVertically,
-                                horizontalArrangement = Arrangement.Center
-                            ) {
-                                CanvasSubCircle(
-                                    count = personList[index].due,
-                                    text = "Due 1 hr",
-                                    countColor = DarkRedCustom,
-                                    canvasSize = 80.dp
-                                )
-                                Spacer(modifier = Modifier.width(20.dp))
-                                CanvasSubCircle(
-                                    count = personList[index].onHold,
-                                    text = "On Hold",
-                                    countColor = OrangeCustom,
-                                    canvasSize = 80.dp
+                                ImagePlaceHolder(
+                                    text = personList[index].name,
+                                    size = 200.dp,
+                                    fontSize = MaterialTheme.typography.h5.fontSize,
+                                    color = Color.LightGray.copy(0.1f),
+                                    fontWeight = FontWeight.Bold
                                 )
                             }
                         }
+                        Text(
+                            text = personList[index].name,
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .align(Alignment.BottomCenter)
+                                .padding(bottom = 50.dp),
+                            textAlign = TextAlign.Center,
+                            fontSize = MaterialTheme.typography.h4.fontSize,
+                            fontWeight = FontWeight.Bold,
+                        )
 
-                        Column {
-                            IconSections(
-                                title = "Contact",
-                                items = listOf(
-                                    IconItems(Icons.Default.MailOutline, personList[index].email),
-                                    IconItems(
-                                        Icons.Default.Phone,
-                                        personList[index].number.repeat(2)
-                                    ),
-                                )
-                            )
-                            IconSections(
-                                title = "Location",
-                                items = listOf(
-                                    IconItems(Icons.Default.LocationOn, personList[index].location),
-                                    IconItems(Icons.Default.Place, personList[index].language),
-                                )
-                            )
+                        Text(
+                            text = personList[index].role,
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .align(Alignment.BottomCenter)
+                                .padding(bottom = 20.dp),
+                            textAlign = TextAlign.Center
+                        )
+                    }
 
-                            // Departments
-                            DepartmentSection()
-
-                            Box(
-                                modifier = Modifier
-                                    .clip(RoundedCornerShape(topEnd = 50.dp, bottomEnd = 50.dp))
-                                    .background(Color.LightGray.copy(0.1f))
-                                    .padding(15.dp),
-                            ) {
-                                Text(
-                                    text = "Today",
-                                    fontSize = MaterialTheme.typography.body2.fontSize
-                                )
-                            }
-                            CounterSections(
-                                title = "Hourly responses",
-                                items = listOf(
-                                    CounterItems(
-                                        counter = "0",
-                                        text = "Incoming",
-                                        counterColor = MaterialTheme.colors.primary
-                                    ),
-                                    CounterItems(
-                                        counter = "0",
-                                        text = "Outgoing",
-                                        counterColor = BlueCustom
-                                    )
-                                ),
-                                canvasType = CanvasLayoutType.DOUBLE
+                    Column(modifier = Modifier.fillMaxWidth()) {
+                        Row(
+                            modifier = Modifier.fillMaxWidth(),
+                            verticalAlignment = Alignment.Bottom,
+                            horizontalArrangement = Arrangement.Center
+                        ) {
+                            CanvasSubCircle(
+                                count = personList[index].overdue,
+                                text = "Overdue",
+                                countColor = DarkRedCustom,
+                                canvasSize = 90.dp,
+                                offset = 10.dp
                             )
-                            Box(
-                                modifier = Modifier
-                                    .clip(RoundedCornerShape(topEnd = 50.dp, bottomEnd = 50.dp))
-                                    .background(Color.LightGray.copy(0.1f))
-                                    .padding(15.dp),
-                            ) {
-                                Text(
-                                    text = "Last 7 days",
-                                    fontSize = MaterialTheme.typography.body2.fontSize
-                                )
-                            }
-                            CounterSections(
-                                title = "Average Handling Time",
-                                items = listOf(
-                                    CounterItems(
-                                        counter = "00:00",
-                                        text = "First response",
-                                        counterColor = LightGreenCustom
-                                    ),
-                                    CounterItems(
-                                        counter = "00:00",
-                                        text = "Response",
-                                        counterColor = MaterialTheme.colors.primary
-                                    ),
-                                    CounterItems(
-                                        counter = "00:00",
-                                        text = "Resolution",
-                                        counterColor = BlueCustom
-                                    ),
-                                ),
-                                canvasType = CanvasLayoutType.TRIPLE
+                            Spacer(modifier = Modifier.width(10.dp))
+                            CanvasMainCircle(
+                                canvasSize = 120.dp,
+                                percentage = personList[index].happinessPercentage
                             )
-                            CounterSections(
-                                title = "First Contact Resolution",
-                                items = listOf(
-                                    CounterItems(
-                                        counter = "0",
-                                        text = "Total Closed Tickets",
-                                        counterColor = MaterialTheme.colors.primary
-                                    ),
-                                    CounterItems(
-                                        counter = "0",
-                                        text = "FCR Closed Tickets",
-                                        counterColor = BlueCustom
-                                    ),
-                                ),
-                                canvasType = CanvasLayoutType.SINGLE
+                            Spacer(modifier = Modifier.width(10.dp))
+                            CanvasSubCircle(
+                                count = personList[index].open,
+                                text = "Open",
+                                countColor = BlueCustom,
+                                canvasSize = 90.dp,
+                                offset = 10.dp
                             )
-
                         }
+                        Spacer(modifier = Modifier.height(5.dp))
+                        Row(
+                            modifier = Modifier.fillMaxWidth(),
+                            verticalAlignment = Alignment.CenterVertically,
+                            horizontalArrangement = Arrangement.Center
+                        ) {
+                            CanvasSubCircle(
+                                count = personList[index].due,
+                                text = "Due 1 hr",
+                                countColor = DarkRedCustom,
+                                canvasSize = 80.dp
+                            )
+                            Spacer(modifier = Modifier.width(20.dp))
+                            CanvasSubCircle(
+                                count = personList[index].onHold,
+                                text = "On Hold",
+                                countColor = OrangeCustom,
+                                canvasSize = 80.dp
+                            )
+                        }
+                    }
+
+                    Column {
+                        IconSections(
+                            title = "Contact",
+                            items = listOf(
+                                IconItems(Icons.Default.MailOutline, personList[index].email),
+                                IconItems(
+                                    Icons.Default.Phone,
+                                    personList[index].number.repeat(2)
+                                ),
+                            )
+                        )
+                        IconSections(
+                            title = "Location",
+                            items = listOf(
+                                IconItems(Icons.Default.LocationOn, personList[index].location),
+                                IconItems(Icons.Default.Place, personList[index].language),
+                            )
+                        )
+
+                        // Departments
+                        DepartmentSection()
+
+                        Box(
+                            modifier = Modifier
+                                .clip(RoundedCornerShape(topEnd = 50.dp, bottomEnd = 50.dp))
+                                .background(Color.LightGray.copy(0.1f))
+                                .padding(15.dp),
+                        ) {
+                            Text(
+                                text = "Today",
+                                fontSize = MaterialTheme.typography.body2.fontSize
+                            )
+                        }
+                        CounterSections(
+                            title = "Hourly responses",
+                            items = listOf(
+                                CounterItems(
+                                    counter = "0",
+                                    text = "Incoming",
+                                    counterColor = MaterialTheme.colors.primary
+                                ),
+                                CounterItems(
+                                    counter = "0",
+                                    text = "Outgoing",
+                                    counterColor = BlueCustom
+                                )
+                            ),
+                            canvasType = CanvasLayoutType.DOUBLE
+                        )
+                        Box(
+                            modifier = Modifier
+                                .clip(RoundedCornerShape(topEnd = 50.dp, bottomEnd = 50.dp))
+                                .background(Color.LightGray.copy(0.1f))
+                                .padding(15.dp),
+                        ) {
+                            Text(
+                                text = "Last 7 days",
+                                fontSize = MaterialTheme.typography.body2.fontSize
+                            )
+                        }
+                        CounterSections(
+                            title = "Average Handling Time",
+                            items = listOf(
+                                CounterItems(
+                                    counter = "00:00",
+                                    text = "First response",
+                                    counterColor = LightGreenCustom
+                                ),
+                                CounterItems(
+                                    counter = "00:00",
+                                    text = "Response",
+                                    counterColor = MaterialTheme.colors.primary
+                                ),
+                                CounterItems(
+                                    counter = "00:00",
+                                    text = "Resolution",
+                                    counterColor = BlueCustom
+                                ),
+                            ),
+                            canvasType = CanvasLayoutType.TRIPLE
+                        )
+                        CounterSections(
+                            title = "First Contact Resolution",
+                            items = listOf(
+                                CounterItems(
+                                    counter = "0",
+                                    text = "Total Closed Tickets",
+                                    counterColor = MaterialTheme.colors.primary
+                                ),
+                                CounterItems(
+                                    counter = "0",
+                                    text = "FCR Closed Tickets",
+                                    counterColor = BlueCustom
+                                ),
+                            ),
+                            canvasType = CanvasLayoutType.SINGLE
+                        )
+
                     }
                 }
-
-                /*val coroutineScope = rememberCoroutineScope()
-                Box(
-                    modifier = Modifier.fillMaxSize().padding(40.dp),
-                    contentAlignment = Alignment.BottomCenter
-                ) {
-                    Button(
-                        onClick = {
-                            coroutineScope.launch {
-                                pagerState.animateScrollToPage(page = 2)
-                            }
-                        }
-                    ) {
-                        Text(text = "Scroll to the third page")
-                    }
-                }*/
             }
+
+            /*val coroutineScope = rememberCoroutineScope()
+            Box(
+                modifier = Modifier.fillMaxSize().padding(40.dp),
+                contentAlignment = Alignment.BottomCenter
+            ) {
+                Button(
+                    onClick = {
+                        coroutineScope.launch {
+                            pagerState.animateScrollToPage(page = 2)
+                        }
+                    }
+                ) {
+                    Text(text = "Scroll to the third page")
+                }
+            }*/
         }
-    )
+    }
 }
 
 @Composable

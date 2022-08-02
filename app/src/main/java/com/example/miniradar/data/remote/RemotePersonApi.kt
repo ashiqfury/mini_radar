@@ -1,6 +1,7 @@
 package com.example.miniradar.data.remote
 
 import android.content.Context
+import android.util.Log
 import com.example.miniradar.data.model.Person
 import com.example.miniradar.data.model.SamplePerson
 import com.example.miniradar.utils.generateRandomNumber
@@ -18,6 +19,10 @@ class RemotePersonApi(private val context: Context) {
         val data =  gson.fromJson(personString, personType) as List<SamplePerson>
 
         for (index in data.indices) {
+            data[index].hasProfilePic = true
+            if (index % 5 == 0) {
+                data[index].hasProfilePic = false
+            }
             data[index].profilePic = "https://picsum.photos/${index + 200}"
             data[index].happinessPercentage = generateRandomNumber()
             data[index].overdue = generateRandomNumber(0, 30)
