@@ -1,8 +1,6 @@
 package com.example.miniradar.data.remote
 
 import android.content.Context
-import android.util.Log
-import com.example.miniradar.data.model.Person
 import com.example.miniradar.data.model.SamplePerson
 import com.example.miniradar.utils.generateRandomNumber
 import com.google.gson.Gson
@@ -20,7 +18,7 @@ class RemotePersonApi(private val context: Context) {
 
         for (index in data.indices) {
             data[index].hasProfilePic = true
-            if (index % 5 == 0) {
+            if (index % 5 == 0) { // some people does not have profile pic
                 data[index].hasProfilePic = false
             }
             data[index].profilePic = "https://picsum.photos/${index + 200}"

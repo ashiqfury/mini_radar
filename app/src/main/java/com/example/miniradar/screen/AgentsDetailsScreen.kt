@@ -104,7 +104,7 @@ fun AgentsDetailsScreen(
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(top = 10.dp, start = 10.dp, end = 10.dp, bottom = 0.dp)
-                    .background(Color.LightGray.copy(0.2f)),
+                    .background(Color.LightGray.copy(0.2f), shape = RoundedCornerShape(10.dp)),
                 elevation = 2.dp,
             ) {
                 Column(
@@ -142,7 +142,9 @@ fun AgentsDetailsScreen(
                             )
                         } else {
                             Row(
-                                modifier = Modifier.fillMaxWidth().padding(top = 50.dp),
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(top = 50.dp),
                                 horizontalArrangement = Arrangement.Center
                             ) {
                                 ImagePlaceHolder(
@@ -535,6 +537,7 @@ fun DepartmentSection(textArray: List<String> = emptyList()) {
                         modifier = Modifier.clickable {
                             visibility = !visibility
                         },
+                        fontSize = MaterialTheme.typography.body2.fontSize
                     )
                 }
             }

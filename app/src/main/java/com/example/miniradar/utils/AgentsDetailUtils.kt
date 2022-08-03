@@ -1,8 +1,6 @@
 package com.example.miniradar.utils
 
-import android.util.Log
 import androidx.compose.foundation.Canvas
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
@@ -127,7 +125,7 @@ fun RowScope.CanvasSingleCircle() {
 
 // main stats section
 @Composable
-fun RowScope.CanvasMainCircle(canvasSize: Dp = 150.dp, percentage: Int = 0) {
+fun CanvasMainCircle(canvasSize: Dp = 150.dp, percentage: Int = 0) {
     Box(
         modifier = Modifier
             .size(canvasSize),
@@ -206,7 +204,7 @@ fun RowScope.CanvasMainCircle(canvasSize: Dp = 150.dp, percentage: Int = 0) {
 }
 
 @Composable
-fun RowScope.CanvasSubCircle(
+fun CanvasSubCircle(
     canvasSize: Dp = 150.dp,
     count: Int,
     text: String,
