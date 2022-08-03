@@ -19,6 +19,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.SolidColor
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.LiveData
 import androidx.navigation.NavHostController
@@ -53,7 +54,7 @@ fun AgentsSearchScreen(
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .background(Color.LightGray.copy(0.2f))
+            .background(Color.LightGray.copy(0.1f))
     ) {
         Row(
             modifier = Modifier
@@ -156,12 +157,21 @@ fun AgentsSearchScreen(
                         ImagePlaceHolder(text = searchedList[index].name, size = 60.dp)
                     }
                     Column(
-                        modifier = Modifier.padding(start = 10.dp),
+                        modifier = Modifier.padding(start = 20.dp),
                         horizontalAlignment = Alignment.Start,
                         verticalArrangement = Arrangement.SpaceEvenly
                     ) {
-                        Text(text = searchedList[index].name)
-                        Text(text = searchedList[index].email)
+                        Text(
+                            text = searchedList[index].name,
+                            fontSize = MaterialTheme.typography.body1.fontSize,
+                            fontWeight = FontWeight.Bold
+                        )
+                        Spacer(modifier = Modifier.height(5.dp))
+                        Text(
+                            text = searchedList[index].email,
+                            fontSize = MaterialTheme.typography.caption.fontSize,
+                            color = Color.DarkGray
+                        )
                     }
                 }
             }

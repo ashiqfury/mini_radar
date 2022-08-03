@@ -12,6 +12,7 @@ import com.example.miniradar.data.model.SamplePerson
 import com.example.miniradar.screen.AgentsCardScreen
 import com.example.miniradar.screen.AgentsDetailsScreen
 import com.example.miniradar.screen.AgentsSearchScreen
+import com.example.miniradar.sharedelements.SharedElementsRoot
 
 @Composable
 fun SetupNavGraph(

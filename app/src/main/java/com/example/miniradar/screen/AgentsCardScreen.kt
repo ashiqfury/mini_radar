@@ -45,6 +45,7 @@ import coil.request.ImageRequest
 import com.example.miniradar.R
 import com.example.miniradar.data.model.SamplePerson
 import com.example.miniradar.navigation.Screen
+import com.example.miniradar.sharedelements.*
 import com.example.miniradar.ui.theme.GreenCustom
 import com.example.miniradar.ui.theme.TestColor
 import com.example.miniradar.utils.calculateInitialFromName
@@ -60,6 +61,17 @@ fun AgentsCardScreen(
     val personList by personLiveData.observeAsState(initial = emptyList())
 
     val scrollState = rememberLazyListState()
+    /*SharedMaterialContainer(
+        key = personList[0].name,
+        screenKey = Screen.Home.route,
+        shape = MaterialTheme.shapes.medium,
+        elevation = 2.dp,
+        transitionSpec = MaterialContainerTransformSpec(
+            pathMotionFactory = MaterialArcMotionFactory,
+            durationMillis = 1000,
+            fadeMode = FadeMode.Out
+        )
+    ) {}*/
     Card(
         shape = RoundedCornerShape(10.dp),
         modifier = Modifier
