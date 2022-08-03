@@ -478,25 +478,5 @@
     "language": "Fijian",
     "location": "Eustaquio Lopez",
     "isOnline": false
-  },
-  {
-    "id": 49,
-    "name": "Mikol Chown",
-    "role": "Training",
-    "email": "mchown1c@google.co.jp",
-    "number": 50,
-    "language": "Ndebele",
-    "location": "Bunga Mas",
-    "isOnline": true
-  },
-  {
-    "id": 50,
-    "name": "Katharina Sollett",
-    "role": "Sales",
-    "email": "ksollett1d@sbwire.com",
-    "number": 64,
-    "language": "Oriya",
-    "location": "Dumaguil",
-    "isOnline": false
   }
 ]

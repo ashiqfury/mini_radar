@@ -1,6 +1,5 @@
 package com.example.miniradar.screen
 
-import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
@@ -18,25 +17,38 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.SolidColor
-import androidx.compose.ui.text.toLowerCase
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.LiveData
 import androidx.navigation.NavHostController
 import com.example.miniradar.data.model.SamplePerson
 import com.example.miniradar.navigation.Screen
-import com.example.miniradar.ui.theme.TestColor
-import java.util.*
-import kotlin.collections.ArrayList
 
 @Composable
-fun AgentsSearchScreen(navController: NavHostController, personLiveData: LiveData<List<SamplePerson>>) {
+fun AgentsSearchScreen(
+    navController: NavHostController,
+    personLiveData: LiveData<List<SamplePerson>>
+) {
 
     val personList by personLiveData.observeAsState(initial = emptyList())
 
-    val searchedList: ArrayList<SamplePerson> = arrayListOf()
+    var text by rememberSaveable { mutableStateOf("") }
+    val searchedList = remember { mutableStateListOf<SamplePerson>() }
+
+    LaunchedEffect(key1 = text) {
+        if (text.isNotEmpty()) {
+            searchedList.clear()
+            personList.filter { person ->
+                person.name.startsWith(text, true)
+            }.also { searchedList.addAll(it) }
+        } else {
+            searchedList.also {
+                it.clear()
+                it.addAll(personList)
+            }
+        }
+    }
 
     Column(
         modifier = Modifier
@@ -47,32 +59,22 @@ fun AgentsSearchScreen(navController: NavHostController, personLiveData: LiveDat
             modifier = Modifier
                 .fillMaxWidth()
                 .background(Color.White)
-                .height(60.dp)
-                .shadow(elevation = 1.dp),
+                .height(55.dp),
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.SpaceBetween
         ) {
-            IconButton(onClick = { navController.popBackStack() }) {
+            IconButton(
+                modifier = Modifier.padding(start = 5.dp),
+                onClick = { navController.popBackStack() }) {
                 Icon(
                     imageVector = Icons.Filled.ArrowBack,
-                    contentDescription = "Localized description"
+                    contentDescription = null,
+                    Modifier.size(24.dp),
+                    tint = Color.Black.copy(0.8f),
                 )
             }
-            var text by rememberSaveable { mutableStateOf("") }
-
-            if (text.isEmpty()) {
-                searchedList.clear()
-                searchedList.addAll(personList)
-            } else {
-                searchedList.clear()
-                personList.forEach {  person ->
-                    if (person.name.lowercase(Locale.getDefault()).contains(text.lowercase(Locale.getDefault()))) {
-                        searchedList.add(person)
-                    }
-                }
-            }
-
             BasicTextField(modifier = Modifier
+                .padding(vertical = 10.dp)
                 .background(
                     MaterialTheme.colors.surface,
                     MaterialTheme.shapes.small,
@@ -96,12 +98,12 @@ fun AgentsSearchScreen(navController: NavHostController, personLiveData: LiveDat
                             .background(Color.LightGray.copy(0.2f)),
                         verticalAlignment = Alignment.CenterVertically,
                     ) {
-                        IconButton(onClick = { }) {
+                        IconButton(onClick = { }, enabled = false) {
                             Icon(
                                 imageVector = Icons.Default.Search,
                                 contentDescription = null,
-                                Modifier.size(20.dp),
-                                tint = Color.Black.copy(0.4f)
+                                Modifier.size(18.dp),
+                                tint = Color.Black.copy(0.3f)
                             )
                         }
                         Box(Modifier.weight(1f)) {
@@ -118,8 +120,8 @@ fun AgentsSearchScreen(navController: NavHostController, personLiveData: LiveDat
                             Icon(
                                 imageVector = Icons.Default.Close,
                                 contentDescription = null,
-                                Modifier.size(20.dp),
-                                tint = Color.Black.copy(0.4f)
+                                Modifier.size(18.dp),
+                                tint = Color.Black.copy(0.3f)
                             )
                         }
                     }
@@ -127,12 +129,18 @@ fun AgentsSearchScreen(navController: NavHostController, personLiveData: LiveDat
             )
         }
         LazyColumn(modifier = Modifier.fillMaxWidth()) {
-            items(searchedList.size - 1) { index ->
+            items(
+                count = searchedList.size,
+                key = { index ->
+                    searchedList[index].id
+                },
+
+                ) { index ->
                 Row(
                     modifier = Modifier
                         .fillMaxWidth()
                         .clickable {
-                            navController.navigate(Screen.Detail.withArgs(personList[index].id - 1)) {
+                            navController.navigate(Screen.Detail.withArgs(searchedList[index].id - 1)) {
                                 popUpTo(Screen.Home.route) {
                                     inclusive = false
                                 }
@@ -142,18 +150,18 @@ fun AgentsSearchScreen(navController: NavHostController, personLiveData: LiveDat
                         .padding(vertical = 10.dp, horizontal = 20.dp),
                     verticalAlignment = Alignment.CenterVertically,
                 ) {
-                    if (personList[index].hasProfilePic) {
-                        CoilImage(url = personList[index].profilePic, size = 60.dp)
+                    if (searchedList[index].hasProfilePic) {
+                        CoilImage(url = searchedList[index].profilePic, size = 60.dp)
                     } else {
-                        ImagePlaceHolder(text = personList[index].name, size = 60.dp)
+                        ImagePlaceHolder(text = searchedList[index].name, size = 60.dp)
                     }
                     Column(
-                    modifier = Modifier.padding(start = 10.dp),
+                        modifier = Modifier.padding(start = 10.dp),
                         horizontalAlignment = Alignment.Start,
                         verticalArrangement = Arrangement.SpaceEvenly
                     ) {
-                        Text(text = personList[index].name)
-                        Text(text = personList[index].email)
+                        Text(text = searchedList[index].name)
+                        Text(text = searchedList[index].email)
                     }
                 }
             }

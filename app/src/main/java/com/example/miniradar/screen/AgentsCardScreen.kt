@@ -290,7 +290,7 @@ fun LazyGridView(
             .animateContentSize()
             .fillMaxWidth()
     ) {
-        items(count = personList.size - 2) { index ->
+        items(count = personList.size) { index ->
             Card(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -343,7 +343,7 @@ fun LazyColumnView(
             .animateContentSize()
     ) {
         val isProfile = true
-        items(personList.size - 2) { index ->
+        items(personList.size) { index ->
             Card(
                 modifier = Modifier
                     .fillMaxSize()

@@ -24,12 +24,6 @@ fun SetupNavGraph(
     ) {
         composable(
             route = Screen.Home.route,
-/*            enterTransition = { _, _ ->
-                fadeIn(animationSpec = tween(2000))
-            },
-            exitTransition = { _, _ ->
-                fadeOut(animationSpec = tween(2000))
-            }*/
         ) {
             AgentsCardScreen(navController = navController, personLiveData = liveDataPersonList)
         }

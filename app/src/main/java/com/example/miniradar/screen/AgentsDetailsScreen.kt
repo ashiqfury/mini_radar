@@ -97,7 +97,7 @@ fun AgentsDetailsScreen(
             )
         }
     ) { padding ->
-        HorizontalPager(count = personList.size - 2, state = pagerState) { index ->
+        HorizontalPager(count = personList.size, state = pagerState) { index ->
 
             Card(
                 shape = RoundedCornerShape(10.dp),
