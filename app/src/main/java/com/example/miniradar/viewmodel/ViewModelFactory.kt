@@ -13,31 +13,3 @@ class ViewModelFactory constructor(private val repository: PersonRepository): Vi
         }
     }
 }
-
-
-//internal class ZPlatformViewModelFactory : ViewModelProvider.Factory {
-//    override fun <T : ViewModel?> create(modelClass: Class<T>): T {
-//        @Suppress("UNCHECKED_CAST")
-//        return when {
-//            modelClass.isAssignableFrom(ZPlatformBaseActivityViewModel::class.java) -> {
-//                if(activityViewModel == null) {
-//                    activityViewModel = ZPlatformBaseActivityViewModel()
-//                }
-//                activityViewModel as T
-//            }
-//            else -> {
-//                if(viewModel == null) {
-//                    viewModel = when {
-//                        modelClass.isAssignableFrom(ZPlatformDetailViewModel::class.java) -> ZPlatformDetailViewModel()
-//                        modelClass.isAssignableFrom(ZPlatformListViewModel::class.java) -> ZPlatformListViewModel()
-//                        modelClass.isAssignableFrom(ZPlatformEditListViewModel::class.java) -> ZPlatformEditListViewModel()
-//                        modelClass.isAssignableFrom(ZPlatformBottomSheetViewModel::class.java) -> ZPlatformBottomSheetViewModel()
-//                        else -> throw IllegalArgumentException("Unknown ViewModel class")
-//                    }
-//                }
-//
-//                viewModel as T
-//            }
-//        }
-//    }
-//}
